@@ -1,29 +1,17 @@
-# Importing Modules
-import mysql.connector as sql
-import os
-import time
-import requests
-from cryptography.fernet import Fernet
+import tkinter
+import customtkinter  # <- import the CustomTkinter module
 
-# Variables to be stored on seperate secure database
-key = 'D9QRguYyat5TWlIyfg9AFWizc91muAGD-UlpWHxT0Y8='
+root_tk = tkinter.Tk()  # create the Tk window like you normally do
+root_tk.geometry("480x640")
+root_tk.title("easy")
 
-# Creating required objects
-db = sql.connect(
-    host = 'localhost',
-    username = 'root',
-    password = 'stooby',
-    database = 'nottalabat'
-)
-cursor = db.cursor()
-f=Fernet(key)
+def button_function():
+    print('helo')
 
-def login(username, password):
-    encpassword = list(cursor.execute(f'select password from userdata where username = {username}'))[0]
-    output = f.decrypt(encpassword.encode())
-    if password == output:
-        return True
+button = customtkinter.CTkButton(master=root_tk,
+                                 fg_color=("black", "lightgray"),  # <- tuple color for light and dark theme
+                                 text="CTkButton",
+                                 command=button_function)
+button.place(relx=0.7, rely=0.5, anchor=tkinter.CENTER)
 
-print('**********************************\n           Not Trivago\n**********************************\n')
-print('Welcome to Not Trivago\nAre you a')
-logintype = int(input('1.'))
+root_tk.mainloop()
