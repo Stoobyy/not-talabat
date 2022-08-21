@@ -28,3 +28,8 @@ def login(username, password):
     if password == output:
         return True
 
+def register(username, password):
+    cursor.execute(f'insert into userdata values ({username}, {password})')
+    db.commit()
+    return True
+
