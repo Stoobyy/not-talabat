@@ -1,17 +1,9 @@
-import mysql.connector as sql
 import os
 import time
 import requests
-import tkinter
-import customtkinter 
 from sql import *
+import random
 
-db = sql.connect(
-    host = 'localhost',
-    username = 'root',
-    password = 'stooby',
-    database = 'notTalabat'
-)
 projectname = 'Not Talabat'
 
 print(f'Welcome to {projectname}\nYour favourite dishes and delicacies delivered to your doorsteps!')
@@ -33,6 +25,7 @@ else:
     print('Registration successful!\nAuto-Login successful')
 
 print('Hold on while we fetch your details...')
+data = retrieve(loginDetails)
 time.sleep(2)
 print('All done!')
 
@@ -64,8 +57,16 @@ if choice == '1':
             print('\n')
             if choice in menu:
                 quantity = input('How many would you like to order: ')
+                payment = input('How would you like to pay?\n1.Cash on Delivery\n2.Pay Online\nEnter your choice: ')
+                if payment == '1':
+                    print('\n')
+                    print(f'Thank you for your order of {choice} x {quantity}. Payment will be made upon delivery\nOrder Number: {len(eval(data[1]))+1}\nEstimated time of delivery: {random.randint(20,50)} minutes')
+                elif payment == '2':
+                    print('\n')
+                    card = input('All sensitive information is stored securely.\nPlease enter your Card Number: ')
+                    cardtype = 'Visa' if str(card)[0] == 4 else 'MasterCard'
+                    print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {cardtype} ending with {str(card)[12:]}\nOrder Number: {len(eval(data[1]))+1}\nEstimated time of delivery: {random.randint(20,50)} minutes')
                 placeOrder(loginDetails, restaurant[0], choice, quantity)
-                print('Order placed successfully')
             else:
                 print('Dish not available')
 

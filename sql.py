@@ -22,6 +22,7 @@ def login(username, password):
 def register(username, password, name):
     password = f.encrypt(password.encode())
     cursor.execute(f'insert into userdata values (\'{password.decode()}\', \'{username}\', \'{name}\')')
+    cursor.execute(f'insert into data values ("{username}", "{dict()}", "{dict()}")')
     db.commit()
     return True
 
@@ -47,13 +48,11 @@ def getRestaurants():
 def placeOrder(username, restaurant, dish, quantity):
     cursor.execute(f'select orders from data where username = \'{username}\'')
     output = cursor.fetchall()
-    if output == []:
+    if output == [('{}',)]:
         output = {}
     else:
-        output = eval(output[0])
+        output = eval(output[0][0])
     output.update({f'{len(output)+1}':[restaurant, dish, quantity]})
-    cursor.execute(f'update data set orders = \"[{output}]\" where username = \'{username}\'')
+    cursor.execute(f'update data set orders = "{output}" where username = \'{username}\'')
     db.commit()
     return True
-
-placeOrder('stooby', 'Not Talabat', 'Pizza', 2)
