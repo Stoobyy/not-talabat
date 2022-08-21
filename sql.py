@@ -55,4 +55,6 @@ def placeOrder(username, restaurant, dish, quantity):
     output.update({f'{len(output)+1}':[restaurant, dish, quantity]})
     cursor.execute(f'update data set orders = "{output}" where username = \'{username}\'')
     db.commit()
-    return True
+    cursor.execute(f'select * from data where username = \'{username}\'')
+    output = cursor.fetchall()
+    return True, output[0]

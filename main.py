@@ -67,7 +67,13 @@ if choice == '1':
                     cardtype = 'Visa' if str(card)[0] == 4 else 'MasterCard'
                     print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {cardtype} ending with {str(card)[12:]}\nOrder Number: {len(eval(data[1]))+1}\nEstimated time of delivery: {random.randint(20,50)} minutes')
                 placeOrder(loginDetails, restaurant[0], choice, quantity)
+                data = retrieve(loginDetails)[1]
             else:
                 print('Dish not available')
+elif choice == '2':
+    print('\n')
+    print('Your orders:')
+    for order in eval(data[1]):
+        print(f'Order Number: {order[0]}\nRestaurant: {order[1]}\nDish: {order[2]}\nQuantity: {order[3]}\nPayment: {order[4]}')
 
 
