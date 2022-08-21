@@ -44,5 +44,7 @@ def getRestaurants():
     output = cursor.fetchall()
     return output
 
-
-cursor.execute('insert into restaurants values(\'B\', "{\'Veggie Exotica\': 69.00, \'Chicken BBQ\': 73.00, \'Margerita\': 55.00}", "{\'Location\': \'Lulu Hypermarket, Maysaloon\', \'Phone\': \'+971 4 4444 444\', \'Website\': \'www.restaurant.com\', \'Opening Hours\': \'9:00 - 21:00\', \'Cuisine\': \'Italian\', \'Rating\': \"4.5\"}")')
+a = getRestaurants()
+b = a[0]
+c = eval(b[2])
+print(c)
