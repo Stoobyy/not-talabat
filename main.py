@@ -50,6 +50,8 @@ if choice == '1':
         print(restaurant[0])
         print(f'Location: {details["Location"]}\nCuisine: {details["Cuisine"]}\nRating: {details["Rating"]}\nPhone: {details["Phone"]}\nWebsite: {details["Website"]}')
     choice = input('Which restaurant would like you to order from: ')
+    print('\n')
+        
     for restaurant in restaurants:
         if restaurant[0] == choice:
             menu = eval(restaurant[1])
@@ -58,5 +60,13 @@ if choice == '1':
                 print(f'{dish}: {menu[dish]}')
             print('\n')
             print('\n')
-    
-    
+            choice = input('Which dish would you like to order: ')
+            print('\n')
+            if choice in menu:
+                quantity = input('How many would you like to order: ')
+                placeOrder(loginDetails, restaurant[0], choice, quantity)
+                print('Order placed successfully')
+            else:
+                print('Dish not available')
+
+

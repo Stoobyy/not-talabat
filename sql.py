@@ -44,7 +44,16 @@ def getRestaurants():
     output = cursor.fetchall()
     return output
 
-a = getRestaurants()
-b = a[0]
-c = eval(b[2])
-print(c)
+def placeOrder(username, restaurant, dish, quantity):
+    cursor.execute(f'select orders from data where username = \'{username}\'')
+    output = cursor.fetchall()
+    if output == []:
+        output = {}
+    else:
+        output = eval(output[0])
+    output.update({f'{len(output)+1}':[restaurant, dish, quantity]})
+    cursor.execute(f'update data set orders = \"[{output}]\" where username = \'{username}\'')
+    db.commit()
+    return True
+
+placeOrder('stooby', 'Not Talabat', 'Pizza', 2)
