@@ -1,35 +1,46 @@
-# Importing Modules
 import mysql.connector as sql
 import os
 import time
 import requests
-from cryptography.fernet import Fernet
 import tkinter
 import customtkinter 
+from sql import *
 
-# Variables to be stored on seperate secure database
-key = 'D9QRguYyat5TWlIyfg9AFWizc91muAGD-UlpWHxT0Y8='
-# Creating required objects
 db = sql.connect(
     host = 'localhost',
     username = 'root',
     password = 'stooby',
     database = 'notTalabat'
 )
-cursor = db.cursor()
-f=Fernet(key)
-root_tk = tkinter.Tk()  # create the Tk window like you normally do
-root_tk.geometry("480x640")
-root_tk.title("Not Talabat | Easy food delivery")
+projectname = 'Not Talabat'
 
-def login(username, password):
-    encpassword = list(cursor.execute(f'select password from userdata where username = {username}'))[0]
-    output = f.decrypt(encpassword.encode())
-    if password == output:
-        return True
+print(f'Welcome to {projectname}\nYour favourite dishes and delicacies delivered to your doorsteps!')
+loginDetails = input('Sign in or sign up with email\nEmail address: ')
+check = check(loginDetails)
+if check[0]:
+    while True:
+        password = input(f'Welcome back {check[1]}\nPlease enter your password to login: ')
+        if login(loginDetails, password):
+            print('Login successful')
+            break
+        else:
+            print('Login unsuccessful, please try again')
+else:
+    print('Hello new user, please sign up')
+    name = input('Whats your name: ')
+    password = input('Enter a safe and secure password: ')
+    register(loginDetails, password, name)
+    print('Registration successful!\nAuto-Login successful')
 
-def register(username, password):
-    cursor.execute(f'insert into userdata values ({username}, {password})')
-    db.commit()
-    return True
+print('Hold on while we fetch your details...')
+time.sleep(2)
+userdata = retrieve(loginDetails)
+print('All done!')
 
+print(f'Welcome back to {projectname} {userdata[1]}, what would you like to do today?')
+print('1.Place an order\n2.View your orders\n3.View or change your account details\n4.Logout')
+choice = input('Enter your choice: ')
+if choice == '1':
+    print('Please wait while we retrieve nearby restaurants...')
+    time.sleep(2)
+    
