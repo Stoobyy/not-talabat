@@ -1,5 +1,6 @@
 from cryptography.fernet import Fernet
 import mysql.connector as sql
+import random
 
 key = 'D9QRguYyat5TWlIyfg9AFWizc91muAGD-UlpWHxT0Y8='
 
@@ -45,16 +46,53 @@ def getRestaurants():
     output = cursor.fetchall()
     return output
 
-def placeOrder(username, restaurant, dish, quantity):
+def placeOrder(username, restaurant, dish, quantity, unix):
     cursor.execute(f'select orders from data where username = \'{username}\'')
     output = cursor.fetchall()
     if output == [('{}',)]:
         output = {}
     else:
         output = eval(output[0][0])
-    output.update({f'{len(output)+1}':[restaurant, dish, quantity]})
+    output.update({f'{len(output)+1}':[restaurant, dish, quantity, unix]})
     cursor.execute(f'update data set orders = "{output}" where username = \'{username}\'')
     db.commit()
     cursor.execute(f'select * from data where username = \'{username}\'')
     output = cursor.fetchall()
     return True, output[0]
+
+def viewOrders(username):
+    cursor.execute(f'select orders from data where username = \'{username}\'')
+    output = cursor.fetchall()
+    if output == [('{}',)]:
+        return False, None
+    else:
+        return True, output[0]
+
+def logout(username):
+    cursor.execute(f'update data set orders = "{dict()}" where username = \'{username}\'')
+    db.commit()
+    return True
+
+
+def changePassword(username, password):
+    password = f.encrypt(password.encode())
+    cursor.execute(f'update userdata set password = "{password.decode()}" where username = \'{username}\'')
+    db.commit()
+    return True
+
+def addPayment(username, card, cvv, expiry,cardtype):
+    cursor.execute(f'select payment from data where username = \'{username}\'')
+    output = cursor.fetchall()
+    if output == [('{}',)]:
+        output = {}
+    else:
+        output = eval(output[0][0])
+    output = {'card':card, 'cvv':cvv, 'expiry':expiry, 'cardtype':cardtype}
+    cursor.execute(f'update data set payment = "{output}" where username = \'{username}\'')
+    db.commit()
+    return True
+
+def retrieveDetails(username):
+    cursor.execute(f'select * from userdata where username = \'{username}\'')
+    output = cursor.fetchall()
+    return output[0]
