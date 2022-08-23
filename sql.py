@@ -1,6 +1,7 @@
 from cryptography.fernet import Fernet
 import mysql.connector as sql
 import random
+import os
 
 key = 'D9QRguYyat5TWlIyfg9AFWizc91muAGD-UlpWHxT0Y8='
 
@@ -96,3 +97,5 @@ def retrieveDetails(username):
     cursor.execute(f'select * from userdata where username = \'{username}\'')
     output = cursor.fetchall()
     return output[0]
+
+
