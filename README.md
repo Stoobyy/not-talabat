@@ -1,3 +1,3 @@
-not talabat very epic
+zoop very epic
 
-zomato<deliveroo<talabat<nottalabat
+formerly not talabat, too lazy to change repo name
