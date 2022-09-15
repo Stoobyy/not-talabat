@@ -96,7 +96,7 @@ while True:
                     data = retrieve(loginDetails)[1]
                 else:
                     print('Dish not available')
-        input('Press enter to continue... ')
+        input('Press enter to continue...  ')
 
     elif choice == '2':
         os.system('cls')
