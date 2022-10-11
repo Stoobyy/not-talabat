@@ -5,7 +5,7 @@ import time
 import requests
 import humanize
 from datetime import datetime, timedelta
-from ctk.ctkFunctions import *
+from ctkFunctions import *
 import random
 
 projectname = 'Not Talabat'

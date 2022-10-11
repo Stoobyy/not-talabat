@@ -5,9 +5,9 @@ import time
 import requests
 import humanize
 from datetime import datetime, timedelta
-from sql import *
+import mysql.connector as sql
 import random
-from ctk.ctk import *
+from ctk import *
 
 key = 'D9QRguYyat5TWlIyfg9AFWizc91muAGD-UlpWHxT0Y8='
 
