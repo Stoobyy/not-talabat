@@ -3,18 +3,21 @@ import sys
 import subprocess
 import mysql.connector as sql
 
-print('Installing required dependencies and packages...')
-subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'humanize', '--quiet'], stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
-subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'cryptography', '--quiet'], stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
-print('Dependencies and packages installed successfully!')
-print()
 db = sql.connect(
     host = 'localhost',
     username = 'root',
     password = 'stooby',
 )
+
 cursor = db.cursor()
 db.autocommit = True
+
+
+print('Installing required dependencies and packages...')
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'humanize', '--quiet'], stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'cryptography', '--quiet'], stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
+print('Dependencies and packages installed successfully!')
+print()
 
 print('Creating database and inserting test values...')
 food = {"Big Mac": 19.00, "Big Mac Meal": 32.00, "McChicken": 18.00, "McChicken Meal": 31.00, "Cheeseburger": 9.00, "Veggie Surprise": 13.00, "Happy Meal": 12.50, "Water": 1.00, "Cola": 1.50, "Fries": 3.00}
