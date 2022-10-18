@@ -13,7 +13,7 @@ db = sql.connect(
 )
 cursor = db.cursor()
 f=Fernet(key)
-cursor.autocommit = True
+db.autocommit = True
 
 def login(username, password):
     cursor.execute(f'select password from userdata where username = \'{username}\'')
@@ -93,3 +93,11 @@ def retrieveDetails(username):
     cursor.execute(f'select * from userdata where username = \'{username}\'')
     output = cursor.fetchall()
     return output[0]
+
+def retrievePayment(username):
+    cursor.execute(f'select payment from data where username = \'{username}\'')
+    output = cursor.fetchall()
+    if output == [('{}',)]:
+        return False, None
+    else:
+        return True, output[0]
