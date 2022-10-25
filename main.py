@@ -6,6 +6,7 @@ import humanize
 from datetime import datetime, timedelta
 from sql import *
 import random
+import pwinput
 
 projectname = 'Zoop'
 
@@ -23,7 +24,7 @@ def loginscreen():
 
     if _check[0]:
         while True:
-            password = input(f'Welcome back {_check[1]}\nPlease enter your password to login: ')
+            password = pwinput.pwinput(prompt=f'Welcome back {_check[1]}\nPlease enter your password to login: ')
             if login(loginDetails, password):
                 print('\nLogin successful')
                 break
@@ -35,7 +36,7 @@ def loginscreen():
         os.system('cls')
         print('Hello new user, please sign up')
         name = input('What is your name: ')
-        password = input('Enter a safe and secure password: ')
+        password = pwinput.pwinput(prompt='Enter a safe and secure password: ')
         register(loginDetails, password, name)
         os.system('cls')
         print('Registration successful!\nAuto-Login successful')
@@ -82,7 +83,6 @@ while True:
                     print(f'{dish}: {menu[dish]} AED')
 
                 print('\n')
-                print('\n')
                 choice = input('Which dish would you like to order: ')
 
                 if choice in menu:
@@ -94,8 +94,7 @@ while True:
                     if payment == '1':
                         print('\n')
                         os.system('cls')
-                        print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {cardtype} ending with {str(card)[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
-                    
+                        print(f'Thank you for your order of {choice} x {quantity}. Payment will be made on delivery\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
                     elif payment == '2':
                         print('\n')
                         os.system('cls')
@@ -136,7 +135,7 @@ while True:
                 for i in range(0,len(order)):
                     j = str(i)
                     deliveryStatus = 'Delivered' if order[j][3] < datetime.now().timestamp() else 'Delivering in'
-                    print(f'Order Number {i+1}\nRestaurant: {order[j][0]}\nDish: {order[j][1]}\nQuantity: {order[j][2]}\n{deliveryStatus} {humanize.naturaltime(datetime.fromtimestamp(order[j][3]))}')
+                    print(f'Order Number {i+1}\nRestaurant: {order[j][0]}\nDish: {order[j][1]}\nQuantity: {order[j][2]}\n{deliveryStatus} {humanize.naturaltime(datetime.fromtimestamp(order[j][3]))} ({datetime.fromtimestamp(order[j][3]).strftime("%D %H:%M:%S")})\n')
                     print('\n')
 
         else:
