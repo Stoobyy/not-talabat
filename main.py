@@ -12,6 +12,7 @@ projectname = 'Zoop'
 
 #Login screen function
 def loginscreen():
+    global new
     global _check
     global data
     global loginDetails
@@ -27,6 +28,7 @@ def loginscreen():
             password = pwinput.pwinput(prompt=f'Welcome back {_check[1]}\nPlease enter your password to login: ')
             if login(loginDetails, password):
                 print('\nLogin successful')
+                new = False
                 break
             else:
                 os.system('cls')
@@ -40,6 +42,7 @@ def loginscreen():
         register(loginDetails, password, name)
         os.system('cls')
         print('Registration successful!\nAuto-Login successful')
+        new = True
 
     os.system('cls')
     print('Hold on while we fetch your details...')
@@ -53,7 +56,7 @@ loginscreen()
 
 while True:
     os.system('cls')
-    print(f'Welcome back to {projectname}, {_check[1]}, what would you like to do today?')
+    print(f'Welcome{" back " if not new else " "}to {projectname}, {_check[1]}! What would you like to do today?')
     print('1.Place an order\n2.View your orders\n3.View or change your account details\n4.Logout\n5.Exit')
     choice = input('Enter your choice: ')
 
