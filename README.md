@@ -1,9 +1,13 @@
 Not talabat (zoop)
 
-Installation:
+**Installation**:
+
 1.Clone repo to local, git clone https://github.com/Stoobyy/not-talabat.git
+
 2.Make venv and pip install -r requirements.txt
+
 3.Run setup.py to setup everything
+
 4.Run main.py 
 
 Enjoy :D
