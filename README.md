@@ -1,7 +1,7 @@
 <div align="center">
 
 # Not talabat
-##  (zoop)
+##  now known as zoop for something but i refuse to name the repo as that
 
 </div>
 
