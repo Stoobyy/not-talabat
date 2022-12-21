@@ -117,7 +117,6 @@ while True:
 
                 for dish in menu:
                     print(f'{dish}: {menu[dish]} AED')
-
                 print('\n')
                 choice = input('Which dish would you like to order: ')
 
@@ -144,9 +143,9 @@ while True:
                                 cardPayment(choice, quantity, deliveryTime, menu)
                         else:
                             cardPayment(choice, quantity, deliveryTime, menu)
-                    placeOrder(loginDetails, restaurant[0], choice, quantity, unix)
+                    price = int(quantity)*menu[choice]
+                    placeOrder(loginDetails, restaurant[0], choice, quantity, unix, price)
                     data = retrieve(loginDetails)[1]
-
                 else:
                     print('Dish not available')
 
@@ -167,22 +166,19 @@ while True:
                 for i in range(0,len(order)):
                     j = str(i)
                     deliveryStatus = 'Delivered' if order[j][3] < datetime.now().timestamp() else 'Delivering in'
-                    print(f'Order Number {i+1}\nRestaurant: {order[j][0]}\nDish: {order[j][1]}\nQuantity: {order[j][2]}\n{deliveryStatus} {humanize.naturaltime(datetime.fromtimestamp(order[j][3]))} ({datetime.fromtimestamp(order[j][3]).strftime("%D %H:%M:%S")})\n')
+                    print(f'Order Number {i+1}\nRestaurant: {order[j][0]}\nDish: {order[j][1]}\nQuantity: {order[j][2]}\n{deliveryStatus} {humanize.naturaltime(datetime.fromtimestamp(order[j][3]))} ({datetime.fromtimestamp(order[j][3]).strftime("%D %H:%M:%S")})\nPrice: {order[j][4]} AED\n')
                     print('\n')
-
         else:
             print('No orders yet, place an order to get started')
-
         input('Press enter to continue... ')
 
     elif choice == '3':
         os.system('cls')
         print('\n')
         userDetails = retrieveDetails(loginDetails)
-        _check = retrieve(loginDetails)
-
-        if _check[2] != '{}':
-            card = eval(_check[2])
+        __check = retrieve(loginDetails)
+        if __check[2] != '{}':
+            card = eval(__check[2])
             cardDetails = f'{card["cardtype"]} ending with {card["card"][12:]} expiring on {card["expiry"]}'
         
         else:
@@ -214,6 +210,3 @@ while True:
 
     else:
         print('Invalid choice, please try again')
-
-
-        
