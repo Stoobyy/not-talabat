@@ -51,6 +51,39 @@ def loginscreen():
     print('All done!')
     os.system('cls')
 
+def cardPayment(choice, quantity, deliveryTime, menu):
+    print('All sensitive information is stored securely and encrypted')
+    text = ''
+    while True:
+        card = input(f'{text}Please enter your Card Number: ')
+        if len(card) != 16:
+            text = 'Invalid Card Number, please try again '
+        else:
+            text = ''
+            break
+    while True:
+        cvv = input(f'{text}Please enter your CVV: ')
+        if len(cvv) not in (3, 4):
+            text = 'Invalid CVV, please try again '
+        else:
+            text = ''
+            break
+    while True:
+        expiry = input(f'{text}Please enter your Expiry Date in the format MM/YY: ')
+        cmonth, cyear = expiry.split('/')
+        month, year = datetime.now().strftime('%m/%y').split('/')
+        if not (int(cyear) >= int(year) and int(cmonth) >= int(month) and int(cyear)<int(year)+10 and int(cmonth) <= 12):
+            text = 'Invalid Expiry Date, please try again '
+        else:
+            text = ''
+            break
+    cardtype = 'Visa' if str(card)[0] == 4 else 'MasterCard'
+    save = input('Would you like to save your card details for future orders?\n1.Yes\n2.No\nEnter your choice: ')
+    os.system('cls')
+    if save == '1':
+        addPayment(loginDetails, card, cvv, expiry, cardtype)
+    print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {cardtype} ending with {str(card)[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
+
 #Initialising login screen
 loginscreen()
 
@@ -103,18 +136,14 @@ while True:
                         os.system('cls')
 
                         if retrievePayment(loginDetails)[0]:
-                            carddetails = eval(retrievePayment(loginDetails)[1][0])
-                            print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {carddetails["cardtype"]} ending with {str(carddetails["card"])[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
-                        
+                            cont = input('Would you like to use your saved card details?\n1.Yes\n2.No\nEnter your choice: ')
+                            if cont == '1':
+                                carddetails = eval(retrievePayment(loginDetails)[1][0])
+                                print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {carddetails["cardtype"]} ending with {str(carddetails["card"])[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
+                            elif cont == '2':
+                                cardPayment(choice, quantity, deliveryTime, menu)
                         else:
-                            card = input('All sensitive information is stored securely.\nPlease enter your Card Number: ')
-                            cvv = input('Please enter your CVV: ')
-                            expiry = input('Please enter your Expiry Date in the format MM/YY: ')
-                            cardtype = 'Visa' if str(card)[0] == 4 else 'MasterCard'
-                            os.system('cls')
-                            addPayment(loginDetails, card, cvv, expiry, cardtype)
-                            print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {cardtype} ending with {str(card)[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
-                        
+                            cardPayment(choice, quantity, deliveryTime, menu)
                     placeOrder(loginDetails, restaurant[0], choice, quantity, unix)
                     data = retrieve(loginDetails)[1]
 
