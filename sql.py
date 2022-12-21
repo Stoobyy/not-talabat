@@ -2,15 +2,19 @@ from cryptography.fernet import Fernet
 import mysql.connector as sql
 import random
 import os
+import json
+
+with open('sqlDetails.json') as f:
+    config = json.load(f)
+
+db = sql.connect(
+    host = config['host'],
+    username = config['username'],
+    password = config['password'],
+)
 
 key = 'D9QRguYyat5TWlIyfg9AFWizc91muAGD-UlpWHxT0Y8=' #Store in secure place
 
-db = sql.connect(
-    host = 'localhost',
-    username = 'root',
-    password = 'stooby',
-    database = 'notTalabat'
-)
 cursor = db.cursor()
 f=Fernet(key)
 db.autocommit = True

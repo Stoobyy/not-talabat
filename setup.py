@@ -2,11 +2,18 @@ import os
 import sys
 import subprocess
 import mysql.connector as sql
+import json
+
+with open('sqlDetails.json', 'w') as f:
+    host = input('Enter the host address: ')
+    username = input('Enter the username: ')
+    password = input('Enter the password: ')
+    json.dump({'host': host, 'username': username, 'password': password}, f)
 
 db = sql.connect(
-    host = 'localhost',
-    username = 'root',
-    password = 'stooby',
+    host = host,
+    username = username,
+    password = password,
 )
 
 cursor = db.cursor()

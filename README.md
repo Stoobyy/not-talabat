@@ -1,5 +1,13 @@
-zoop very epic
-discord bot coming soon 
+Not talabat (zoop)
 
-formerly not talabat, too lazy to change repo name
+Installation:
+1.Clone repo to local, git clone https://github.com/Stoobyy/not-talabat.git
+2.Make venv and pip install -r requirements.txt
+3.Run setup.py to setup everything
+4.Run main.py 
 
+Enjoy :D
+Made with lots of <3
+
+https://discord.gg/ebkRqpXv
+Stooby#6969
