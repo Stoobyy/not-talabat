@@ -1,7 +1,6 @@
 #Importing required modules
 import os
 import time
-import requests
 import humanize
 from datetime import datetime, timedelta
 from sql import *
@@ -51,6 +50,7 @@ def loginscreen():
     print('All done!')
     os.system('cls')
 
+#Payment function
 def cardPayment(choice, quantity, deliveryTime, menu):
     print('All sensitive information is stored securely and encrypted')
     text = ''
@@ -82,7 +82,7 @@ def cardPayment(choice, quantity, deliveryTime, menu):
     os.system('cls')
     if save == '1':
         addPayment(loginDetails, card, cvv, expiry, cardtype)
-    print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {cardtype} ending with {str(card)[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
+    print(f"Thank you for your order of {choice} x {quantity}. Payment has been made on your {cardtype} ending with {str(card)[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes")
 
 #Initialising login screen
 loginscreen()
@@ -180,7 +180,6 @@ while True:
         if __check[2] != '{}':
             card = eval(__check[2])
             cardDetails = f'{card["cardtype"]} ending with {card["card"][12:]} expiring on {card["expiry"]}'
-        
         else:
             cardDetails = None
         print(f'Your account details:\nName: {userDetails[2]}\nEmail: {userDetails[1]}\nCard: {cardDetails}')
@@ -189,9 +188,18 @@ while True:
 
         if choice == '1':
             os.system('cls')
-            password = input('Enter your new password: ')
-            changePassword(loginDetails, password)
-            print('Password changed successfully')
+            oldpassword = pwinput.pwinput(prompt='Enter Old Password: ')
+            if login(loginDetails, oldpassword):
+                password = pwinput.pwinput(prompt='Enter New Password: ')
+                confirm = pwinput.pwinput(prompt='Confirm New Password: ')
+
+                if password == confirm:
+                    changePassword(loginDetails, password)
+                    print('Password changed successfully')
+                else:
+                    print('Passwords do not match')
+            else:
+                print('Incorrect password')
             input('Press enter to continue... ')
 
     elif choice == '4':
@@ -210,3 +218,4 @@ while True:
 
     else:
         print('Invalid choice, please try again')
+        

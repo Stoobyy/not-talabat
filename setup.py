@@ -13,7 +13,7 @@ with open('sqlDetails.json', 'w') as f:
 db = sql.connect(
     host = host,
     username = username,
-    password = password,
+    password = password
 )
 
 cursor = db.cursor()
@@ -35,14 +35,14 @@ detailspizza = {"Location": "Mirdif City Center", "Phone": "+971 4 323 3421", "W
 detailsgazebo = {"Location": "Sahara Center", "Phone": "+971 4 121 0021", "Website": "www.gazebo.ae", "Opening Hours": "10:00 - 23:00", "Cuisine": "Fast Food", "Rating": "4.5"}
 foodgazebo = {"Murgh Tikka Biryani": 45.00, "Paneer Tikka Biryani": 43.00, "Pulao" : 35.00, "Roti": 6.00, "Murgh Masala": 30.00, "Paneer Masala": 28.00, "Dal Makhani": 25.00, "Water": 1.00, "Cola": 1.50, "Fries": 3.00}
 
-cursor.execute('drop database if exists notTalabat')
-cursor.execute('create database notTalabat')
-cursor.execute('use notTalabat')
+cursor.execute('drop database if exists zoop')
+cursor.execute('create database zoop')
+cursor.execute('use zoop')
 cursor.execute('drop table if exists userdata')
 cursor.execute('drop table if exists data')
 cursor.execute('drop table if exists restaurants')
 cursor.execute('create table userdata (password varchar(100), username varchar(100), name varchar(100))')
-cursor.execute('create table data (username varchar(100), orders varchar(16000), payment varchar(100));')
+cursor.execute('create table data (username varchar(100), orders varchar(16000), payment text(1000));')
 cursor.execute('create table restaurants (name varchar(100), menu varchar(10000), details varchar(1000))')
 cursor.execute(f'insert into restaurants values("McDonalds", "{str(foodmcd)}", "{str(detailsmcd)}")')
 cursor.execute(f'insert into restaurants values("Pizza Hut", "{str(foodpizza)}", "{str(detailspizza)}")')

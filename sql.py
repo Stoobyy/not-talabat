@@ -11,6 +11,7 @@ db = sql.connect(
     host = config['host'],
     username = config['username'],
     password = config['password'],
+    database = 'zoop'
 )
 
 key = 'D9QRguYyat5TWlIyfg9AFWizc91muAGD-UlpWHxT0Y8=' #Store in secure place
