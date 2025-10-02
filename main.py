@@ -1,4 +1,5 @@
-#Importing required modules
+# main.py (rich-enhanced, logic preserved)
+# Importing required modules
 import os
 import time
 import humanize
@@ -9,172 +10,291 @@ import pwinput
 
 projectname = 'Zoop'
 
-#Login screen function
+try:
+    from rich.console import Console
+    from rich.table import Table
+    from rich.panel import Panel
+    from rich.prompt import Prompt
+
+    console = Console()
+    RICH = True
+except Exception:
+    Console = None
+    Table = None
+    Panel = None
+    Prompt = None
+    console = None
+    RICH = False
+
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def cprint(text='', end='\n'):
+    if RICH:
+        console.print(text, end=end)
+    else:
+        print(text, end=end)
+
+
+def input_prompt(prompt=''):
+    if RICH:
+        return console.input(prompt)
+    else:
+        return input(prompt)
+
+
+def prompt_choice(prompt, choices=None, default=None):
+    if choices and RICH:
+        return Prompt.ask(prompt, choices=choices, default=default)
+    else:
+        return input_prompt(f"{prompt} ")
+
+
+def print_table(title, headers, rows):
+    if RICH:
+        table = Table(title=title)
+        for h in headers:
+            table.add_column(h, overflow="fold")
+        for row in rows:
+            # convert every cell to string
+            table.add_row(*[str(x) for x in row])
+        console.print(table)
+    else:
+        # simple fallback table
+        cprint(f"--- {title} ---")
+        cprint(" | ".join(headers))
+        cprint("-" * 40)
+        for row in rows:
+            cprint(" | ".join([str(x) for x in row]))
+        cprint("")
+
+
+def print_panel(title, content):
+    if RICH:
+        console.print(Panel(content, title=title, expand=False))
+    else:
+        cprint(f"{title}\n{content}\n")
+
+
+# Login screen function
 def loginscreen():
     global new
     global _check
     global data
     global loginDetails
 
-    os.system('cls')
-    print(f'Welcome to {projectname}\nYour favourite dishes and delicacies delivered to your doorsteps!')
-    loginDetails = input('Sign in or sign up with email\nEmail address: ')
-    os.system('cls')
+    clear()
+    cprint(f"[bold cyan]Welcome to {projectname}[/bold cyan]\nYour favourite dishes and delicacies delivered to your doorsteps!" if RICH else f"Welcome to {projectname}\nYour favourite dishes and delicacies delivered to your doorsteps!")
+    loginDetails = input_prompt('Sign in or sign up with email\nEmail address: ')
+    clear()
     _check = check(loginDetails)
 
     if _check[0]:
         while True:
             password = pwinput.pwinput(prompt=f'Welcome back {_check[1]}\nPlease enter your password to login: ')
             if login(loginDetails, password):
-                print('\nLogin successful')
+                cprint('\n[green]Login successful[/green]' if RICH else '\nLogin successful')
                 new = False
                 break
             else:
-                os.system('cls')
-                print('Login unsuccessful, please try again')
-                
+                clear()
+                cprint('[red]Login unsuccessful, please try again[/red]' if RICH else 'Login unsuccessful, please try again')
+
     else:
-        os.system('cls')
-        print('Hello new user, please sign up')
-        name = input('What is your name: ')
+        clear()
+        cprint('Hello new user, please sign up')
+        name = input_prompt('What is your name: ')
         password = pwinput.pwinput(prompt='Enter a safe and secure password: ')
         register(loginDetails, password, name)
-        os.system('cls')
-        print('Registration successful!\nAuto-Login successful')
+        clear()
+        cprint('[green]Registration successful!\nAuto-Login successful[/green]' if RICH else 'Registration successful!\nAuto-Login successful')
         new = True
 
-    os.system('cls')
-    print('Hold on while we fetch your details...')
+    clear()
+    cprint('Hold on while we fetch your details...')
     _check = check(loginDetails)
     data = retrieve(loginDetails)
-    print('All done!')
-    os.system('cls')
+    cprint('All done!')
+    clear()
 
-#Payment function
-def cardPayment(choice, quantity, deliveryTime, menu):
-    print('All sensitive information is stored securely and encrypted')
+
+# -------------------------
+# Payment function
+# -------------------------
+def cardPayment_cart(cart, deliveryTime, total_price):
+    cprint('All sensitive information is stored securely and encrypted')
     text = ''
     while True:
-        card = input(f'{text}Please enter your Card Number: ')
+        card = input_prompt(f'{text}Please enter your Card Number: ')
         if len(card) != 16:
             text = 'Invalid Card Number, please try again '
         else:
             text = ''
             break
     while True:
-        cvv = input(f'{text}Please enter your CVV: ')
+        cvv = input_prompt(f'{text}Please enter your CVV: ')
         if len(cvv) not in (3, 4):
             text = 'Invalid CVV, please try again '
         else:
             text = ''
             break
     while True:
-        expiry = input(f'{text}Please enter your Expiry Date in the format MM/YY: ')
-        cmonth, cyear = expiry.split('/')
-        month, year = datetime.now().strftime('%m/%y').split('/')
-        if not (int(cyear) >= int(year) and int(cmonth) >= int(month) and int(cyear)<int(year)+10 and int(cmonth) <= 12):
+        expiry = input_prompt(f'{text}Please enter your Expiry Date in the format MM/YY: ')
+        try:
+            cmonth, cyear = expiry.split('/')
+            month, year = datetime.now().strftime('%m/%y').split('/')
+            if not (int(cyear) >= int(year) and int(cmonth) >= int(month) and int(cyear) < int(year) + 10 and int(cmonth) <= 12):
+                text = 'Invalid Expiry Date, please try again '
+            else:
+                text = ''
+                break
+        except Exception:
             text = 'Invalid Expiry Date, please try again '
-        else:
-            text = ''
-            break
-    cardtype = 'Visa' if str(card)[0] == 4 else 'MasterCard'
-    save = input('Would you like to save your card details for future orders?\n1.Yes\n2.No\nEnter your choice: ')
-    os.system('cls')
+
+    cardtype = 'Visa' if str(card)[0] == '4' else 'MasterCard'
+    save = prompt_choice('Would you like to save your card details for future orders?\n1.Yes\n2.No\nEnter your choice:', choices=['1', '2'], default='1')
+    clear()
     if save == '1':
         addPayment(loginDetails, card, cvv, expiry, cardtype)
-    print(f"Thank you for your order of {choice} x {quantity}. Payment has been made on your {cardtype} ending with {str(card)[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes")
 
-#Initialising login screen
+    cprint("Thank you for your order:")
+    for dish, qty, price in cart:
+        cprint(f"   {dish} x {qty} = {price} AED")
+    cprint(f"Total: {total_price} AED\nPayment has been made on your {cardtype} ending with {str(card)[12:]}")
+
+    orders = viewOrders(loginDetails)
+    if orders[0]:
+        order_number = len(eval(orders[1][0])) + 1
+    else:
+        order_number = 1
+
+    cprint(f"Order Number: {order_number}\nEstimated time of delivery: {deliveryTime // 60} minutes")
+
+
+
+# Program start
 loginscreen()
 
+cart = []
 while True:
-    os.system('cls')
-    print(f'Welcome{" back " if not new else " "}to {projectname}, {_check[1]}! What would you like to do today?')
-    print('1.Place an order\n2.View your orders\n3.View or change your account details\n4.Logout\n5.Exit')
-    choice = input('Enter your choice: ')
+    clear()
+    cprint(f'Welcome{" back " if not new else " "}to {projectname}, {_check[1]}! What would you like to do today?')
+    cprint('1.Place an order\n2.View your orders\n3.View or change your account details\n4.Logout\n5.Exit')
+    choice = input_prompt('Enter your choice: ')
 
     if choice == '1':
-        os.system('cls')
-        print('Please wait while we retrieve nearby restaurants...')
-        os.system('cls')
+        clear()
+        cprint('Please wait while we retrieve nearby restaurants...')
+        clear()
         restaurants = getRestaurants()
-        print('All done! Here are the nearby restaurants\n')
+        cprint('All done! Here are the nearby restaurants\n')
 
+        rows = []
         for restaurant in restaurants:
             details = eval(restaurant[2])
-            menu = eval(restaurant[1])
-            print(restaurant[0])
-            print(f'Location: {details["Location"]}\nCuisine: {details["Cuisine"]}\nRating: {details["Rating"]}\nPhone: {details["Phone"]}\nWebsite: {details["Website"]}\n\n')
-        
-        choice = input('Which restaurant would like you to order from: ')
-        print('\n')
-        os.system('cls')
+            rows.append((restaurant[0], details.get("Location", ""), details.get("Cuisine", ""), details.get("Rating", ""), details.get("Phone", ""), details.get("Website", "")))
+        print_table("Nearby Restaurants", ["Name", "Location", "Cuisine", "Rating", "Phone", "Website"], rows)
+
+        choice = input_prompt('Which restaurant would like you to order from: ')
+        cprint('\n')
+        clear()
 
         for restaurant in restaurants:
             if restaurant[0] == choice:
                 menu = eval(restaurant[1])
-                print('Menu:')
+                while True:
+                    clear()
+                    cprint(f"Menu - {restaurant[0]}:\n")
+                    menu_rows = [(dish, f"{menu[dish]} AED") for dish in menu]
+                    print_table(f"Menu - {restaurant[0]}", ["Dish", "Price"], menu_rows)
 
-                for dish in menu:
-                    print(f'{dish}: {menu[dish]} AED')
-                print('\n')
-                choice = input('Which dish would you like to order: ')
+                    choice = input_prompt('\nWhich dish would you like to order (or type "checkout" to finish): ')
 
-                if choice in menu:
-                    quantity = input('\nHow many would you like to order: ')
-                    payment = input('\nHow would you like to pay?\n1.Cash on Delivery\n2.Pay Online\nEnter your choice: ')
-                    deliveryTime = random.randint(20,50)*60
-                    unix = (datetime.now()+ timedelta(seconds=deliveryTime)).timestamp()
+                    if choice.lower() == "checkout":
+                        if not cart:
+                            cprint("Cart is empty, nothing to checkout.")
+                            input_prompt("Press enter to continue...")
+                            break
 
-                    if payment == '1':
-                        print('\n')
-                        os.system('cls')
-                        print(f'Thank you for your order of {choice} x {quantity}. Payment will be made on delivery\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
-                    elif payment == '2':
-                        print('\n')
-                        os.system('cls')
+                        clear()
+                        cprint("Your Cart:")
+                        cart_rows = [(dish, qty, f"{price} AED") for dish, qty, price in cart]
+                        print_table("Cart Summary", ["Dish", "Qty", "Price"], cart_rows)
+                        total_price = sum([item[2] for item in cart])
+                        cprint(f"Total: {total_price} AED")
 
-                        if retrievePayment(loginDetails)[0]:
-                            cont = input('Would you like to use your saved card details?\n1.Yes\n2.No\nEnter your choice: ')
-                            if cont == '1':
-                                carddetails = eval(retrievePayment(loginDetails)[1][0])
-                                print(f'Thank you for your order of {choice} x {quantity}. Payment has been made on your {carddetails["cardtype"]} ending with {str(carddetails["card"])[12:]}\nOrder Number: {len(eval(data[1]))+1}\nPrice: {int(quantity)*menu[choice]} AED\nEstimated time of delivery: {deliveryTime//60} minutes')
-                            elif cont == '2':
-                                cardPayment(choice, quantity, deliveryTime, menu)
-                        else:
-                            cardPayment(choice, quantity, deliveryTime, menu)
-                    price = int(quantity)*menu[choice]
-                    placeOrder(loginDetails, restaurant[0], choice, quantity, unix, price)
-                    data = retrieve(loginDetails)[1]
-                else:
-                    print('Dish not available')
+                        payment = prompt_choice('\nHow would you like to pay?\n1.Cash on Delivery\n2.Pay Online\nEnter your choice:', choices=['1', '2'], default='1')
+                        deliveryTime = random.randint(20, 50) * 60
+                        unix = (datetime.now() + timedelta(seconds=deliveryTime)).timestamp()
 
-        input('Press enter to continue...  ')
+                        if payment == '1':
+                            cprint(f"\nThank you! Payment on delivery.\nOrder placed for {len(cart)} items. Total = {total_price} AED")
+                        elif payment == '2':
+                            if retrievePayment(loginDetails)[0]:
+                                cont = prompt_choice('Would you like to use your saved card details?\n1.Yes\n2.No\nEnter your choice:', choices=['1', '2'], default='1')
+                                if cont == '1':
+                                    carddetails = eval(retrievePayment(loginDetails)[1][0])
+                                    cprint(f'Thank you for your order. Payment has been made on your {carddetails["cardtype"]} ending with {str(carddetails["card"])[12:]}')
+                                else:
+                                    cardPayment_cart(cart, deliveryTime, total_price)
+                            else:
+                                cardPayment_cart(cart, deliveryTime, total_price)
+
+                        placeOrder(loginDetails, restaurant[0], cart, unix, total_price)
+                        data = retrieve(loginDetails)[1]
+                        cart = [] 
+                        break
+
+                    elif choice in menu:
+                        try:
+                            quantity = int(input_prompt('\nHow many would you like to order: '))
+                        except Exception:
+                            cprint("Invalid quantity")
+                            input_prompt("Press enter to continue...")
+                            continue
+                        price = quantity * menu[choice]
+                        cart.append((choice, quantity, price))
+                        cprint(f"{choice} x {quantity} added to cart ({price} AED)")
+                        input_prompt("Press enter to continue...")
+                    else:
+                        cprint("Dish not available")
+                        input_prompt("Press enter to continue...")
+
+        input_prompt('Press enter to continue...  ')
 
     elif choice == '2':
-        os.system('cls')
-        print('\n')
+        clear()
+        cprint('\n')
         orders = viewOrders(loginDetails)
 
         if orders[0]:
-            print('Your orders:')
+            cprint('Your orders:')
             orders = orders[1]
-
             for order in orders:
                 order = eval(order)
-
-                for i in range(0,len(order)):
+                for i in range(0, len(order)):
                     j = str(i)
-                    deliveryStatus = 'Delivered' if order[j][3] < datetime.now().timestamp() else 'Delivering in'
-                    print(f'Order Number {i+1}\nRestaurant: {order[j][0]}\nDish: {order[j][1]}\nQuantity: {order[j][2]}\n{deliveryStatus} {humanize.naturaltime(datetime.fromtimestamp(order[j][3]))} ({datetime.fromtimestamp(order[j][3]).strftime("%D %H:%M:%S")})\nPrice: {order[j][4]} AED\n')
-                    print('\n')
+                    restaurant = order[j][0]
+                    items = order[j][1]
+                    unix_time = order[j][2]
+                    total_price = order[j][3]
+
+                    cprint(f'Order Number {i+1}\nRestaurant: {restaurant}')
+                    for dish, qty, price in items:
+                        cprint(f'   {dish} x {qty} = {price} AED')
+
+                    deliveryStatus = 'Delivered' if unix_time < datetime.now().timestamp() else 'Delivering in'
+                    cprint(f'Total Price: {total_price} AED\n{deliveryStatus} {humanize.naturaltime(datetime.fromtimestamp(unix_time))} ({datetime.fromtimestamp(unix_time).strftime("%D %H:%M:%S")})\n')
+                    cprint('\n')
         else:
-            print('No orders yet, place an order to get started')
-        input('Press enter to continue... ')
+            cprint('No orders yet, place an order to get started')
+        input_prompt('Press enter to continue... ')
 
     elif choice == '3':
-        os.system('cls')
-        print('\n')
+        clear()
+        cprint('\n')
         userDetails = retrieveDetails(loginDetails)
         __check = retrieve(loginDetails)
         if __check[2] != '{}':
@@ -182,12 +302,14 @@ while True:
             cardDetails = f'{card["cardtype"]} ending with {card["card"][12:]} expiring on {card["expiry"]}'
         else:
             cardDetails = None
-        print(f'Your account details:\nName: {userDetails[2]}\nEmail: {userDetails[1]}\nCard: {cardDetails}')
-        print('\n')
-        choice = input('Would you like to change your password?\n1.Yes\n2.No\nEnter your choice: ')
+
+        details_content = f"Name: {userDetails[2]}\nEmail: {userDetails[1]}\nCard: {cardDetails if cardDetails else 'None'}"
+        print_panel("Account Details", details_content)
+
+        choice = prompt_choice('Would you like to change your password?\n1.Yes\n2.No\nEnter your choice:', choices=['1', '2'], default='2')
 
         if choice == '1':
-            os.system('cls')
+            clear()
             oldpassword = pwinput.pwinput(prompt='Enter Old Password: ')
             if login(loginDetails, oldpassword):
                 password = pwinput.pwinput(prompt='Enter New Password: ')
@@ -195,27 +317,26 @@ while True:
 
                 if password == confirm:
                     changePassword(loginDetails, password)
-                    print('Password changed successfully')
+                    cprint('Password changed successfully')
                 else:
-                    print('Passwords do not match')
+                    cprint('Passwords do not match')
             else:
-                print('Incorrect password')
-            input('Press enter to continue... ')
+                cprint('Incorrect password')
+            input_prompt('Press enter to continue...')
 
     elif choice == '4':
-        print('\n')
-        print('Logging out...')
+        cprint('\n')
+        cprint('Logging out...')
         time.sleep(2)
-        print('Logged out successfully')
+        cprint('Logged out successfully')
 
         loginscreen()
 
     elif choice == '5':
-        print('\n')
-        print(f'Thank you for using {projectname}\nHave a nice day!')
+        cprint('\n')
+        cprint(f'Thank you for using {projectname}\nHave a nice day!')
         time.sleep(4)
         exit()
 
     else:
-        print('Invalid choice, please try again')
-        
+        cprint('Invalid choice, please try again')

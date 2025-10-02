@@ -52,18 +52,20 @@ def getRestaurants():
     output = cursor.fetchall()
     return output
 
-def placeOrder(username, restaurant, dish, quantity, unix, price):
+def placeOrder(username, restaurant, items, unix, total_price):
     cursor.execute(f'select orders from data where username = \'{username}\'')
     output = cursor.fetchall()
     if output == [('{}',)]:
         output = {}
     else:
         output = eval(output[0][0])
-    output.update({f'{len(output)}':[restaurant, dish, quantity, unix, price]})
+
+    output.update({f'{len(output)}':[restaurant, items, unix, total_price]})
     cursor.execute(f'update data set orders = "{output}" where username = \'{username}\'')
     cursor.execute(f'select * from data where username = \'{username}\'')
     output = cursor.fetchall()
     return True, output[0]
+
 
 def viewOrders(username):
     cursor.execute(f'select orders from data where username = \'{username}\'')
